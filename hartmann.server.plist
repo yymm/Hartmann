@@ -8,7 +8,7 @@
 		<false/>
 	</dict>
 	<key>Label</key>
-	<string>golang.hartmann.server</string>
+	<string>hartmann.server</string>
 	<key>ProgramArguments</key>
 	<array>
 		<string>/path/to/binary/Hartmann</string>
