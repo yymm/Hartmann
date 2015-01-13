@@ -9,7 +9,6 @@ import (
 	"net/http"
 	"os"
 	"os/exec"
-	"path/filepath"
 	"strconv"
 	"time"
 )
@@ -89,32 +88,24 @@ func SaveJsonToRedis(app string, j json_struct) {
 // Call notify tool
 // Enable: OSX and Ubuntu
 func ShowNotifier(app string, status int) {
-	dir, err := filepath.Abs(filepath.Dir("hartmann.jpg"))
-	if err != nil {
-		log.Fatal(err)
-	}
-
 	s := "Success!!"
 	if status == 0 {
 		s = "Failure.."
 	}
 
 	if _, err := os.Stat("/System/Library/CoreServices/SystemVersion.plist"); err == nil {
-		out, err := exec.Command("terminal-notifier",
+		out, err := exec.Command("/usr/local/bin/terminal-notifier",
 			"-group", "'Hartmann'",
 			"-title", "["+s+"]"+"Application: "+app,
 			"-subtitle", "Sir! This is a Hartmann notification",
-			"-message", s,
-			"-contentImage", filepath.Join(dir, "hartmann.jpg"),
-			"-appIcon", filepath.Join(dir, "hartmann.jpg")).Output()
+			"-message", s).Output()
 		if err != nil {
 			log.Fatal("exec.Command: ", err)
 		}
 		log.Printf("Show notifier: %s", out)
 	} else if _, err := os.Stat("/etc/lsb-release"); err == nil {
 		out, err := exec.Command("notify-send",
-			"["+s+"]"+"Application: "+app, "Sir! This is a Hartmann notification",
-			"-i", filepath.Join(dir, "hartmann.jpg")).Output()
+			"["+s+"]"+"Application: "+app, "Sir! This is a Hartmann notification",).Output()
 		if err != nil {
 			log.Fatal("exec.Command: ", err)
 		}
