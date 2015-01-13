@@ -1,4 +1,6 @@
-import http.client
+#!/usr/bin/env python
+
+import urllib2
 import json
 import subprocess
 import sys
@@ -14,10 +16,6 @@ def exec_command(cmdline):
     return p.stdout, p.stdin, p.stderr
 
 
-connection = http.client.HTTPConnection('localhost', 8100)
-
-headers = {'Content-type': 'application/json'}
-
 if len(sys.argv) != 3:
     print("Argvs is two.")
     exit(1)
@@ -29,10 +27,6 @@ stdout, stdin, stderr = exec_command(cmd)
 stdout_utf8 = stdout.read().decode('utf-8')
 stderr_utf8 = stderr.read().decode('utf-8')
 
-#print(stdout_utf8)
-#print(stderr_utf8)
-#print(cmd)
-
 json_dic = {
     'stdout': stdout_utf8,
     'stderr': stderr_utf8,
@@ -41,13 +35,15 @@ json_dic = {
     'app': app
 }
 
-print(json_dic)
-
 json_str = json.dumps(json_dic)
 
-print(json_str)
+#print(json_str)
 
-connection.request('POST', '/json', json_str, headers)
+headers = {'Content-type': 'application/json'}
 
-response = connection.getresponse()
-print(response.read().decode())
+req = urllib2.Request('http://192.168.5.52:8100/json', json_str, headers)
+
+f = urllib2.urlopen(req)
+
+response = f.read()
+f.close()
