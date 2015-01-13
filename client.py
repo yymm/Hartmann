@@ -41,7 +41,7 @@ json_str = json.dumps(json_dic)
 
 headers = {'Content-type': 'application/json'}
 
-req = urllib2.Request('http://192.168.5.52:8100/json', json_str, headers)
+req = urllib2.Request('http://0.0.0.0:8100/json', json_str, headers)
 
 f = urllib2.urlopen(req)
 

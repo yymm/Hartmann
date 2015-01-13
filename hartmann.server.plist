@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>KeepAlive</key>
+	<dict>
+		<key>SuccessfulExit</key>
+		<false/>
+	</dict>
+	<key>Label</key>
+	<string>golang.hartmann.server</string>
+	<key>ProgramArguments</key>
+	<array>
+		<string>/path/to/binary/Hartmann</string>
+	</array>
+	<key>RunAtLoad</key>
+	<true/>
+	<key>StandardErrorPath</key>
+	<string>/usr/local/var/log/hartmann.log</string>
+	<key>StandardOutPath</key>
+	<string>/usr/local/var/log/hartmann.log</string>
+	<key>WorkingDirectory</key>
+	<string>/usr/local/var</string>
+</dict>
+</plist>
