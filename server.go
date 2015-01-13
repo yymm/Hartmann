@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"flag"
 	"fmt"
 	"github.com/garyburd/redigo/redis"
 	"log"
@@ -9,6 +10,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"strconv"
 	"time"
 )
 
@@ -22,7 +24,9 @@ type json_struct struct {
 	App     string
 }
 
-// Index
+// Index(Json API)
+// <URL>/<APP_NAME>
+// Format: [{json_struct}, {json_struct}, {json_struct}, ...]
 func Index(rw http.ResponseWriter, req *http.Request) {
 	c, err := redis.Dial("tcp", ":6379")
 	if err != nil {
@@ -30,7 +34,6 @@ func Index(rw http.ResponseWriter, req *http.Request) {
 	}
 	defer c.Close()
 
-	//get
 	tag := req.URL.Path[1:]
 	l, err := redis.Int(c.Do("llen", tag))
 	if err != nil {
@@ -43,9 +46,12 @@ func Index(rw http.ResponseWriter, req *http.Request) {
 		return
 	}
 
+	var json string
 	for i, _ := range rec {
-		fmt.Fprintf(rw, "<div>[%d] json: %s</div>", i, rec[i])
+		json += rec[i] + ","
 	}
+	json = "[" + json[0:len(json)-1] + "]"
+	fmt.Fprintf(rw, "%s", json)
 }
 
 // Post: Json data
@@ -78,7 +84,6 @@ func SaveJsonToRedis(app string, j json_struct) {
 	c.Do("rpush", app, string(data))
 
 	log.Printf("[App: %s] success to connect and save to redis.", app)
-
 }
 
 // Call notify tool
@@ -120,11 +125,14 @@ func ShowNotifier(app string, status int) {
 }
 
 func main() {
-	port := "8100"
+	var port int
+	flag.IntVar(&port, "port", 8100, "set port => 0.0.0.0:<port> (default:8100)")
+	flag.IntVar(&port, "p", 8100, "set port => 0.0.0.0:<port> (default:8100)")
+	flag.Parse()
+	fmt.Printf("Run server. Port: " + strconv.Itoa(port) + " (default)\n\nIf you want to run other port, ask for help.)\n\n")
 	http.HandleFunc("/", Index)
 	http.HandleFunc("/json", PostJson)
-	fmt.Printf("Start server. Port: " + port + " (default)\n\n")
-	err := http.ListenAndServe(":"+port, nil)
+	err := http.ListenAndServe(":"+strconv.Itoa(port), nil)
 	if err != nil {
 		log.Fatal("ListenAndServe: ", err)
 	}
